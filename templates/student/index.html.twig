@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Student index{% endblock %}
+
+{% block body %}
+    <h1>Student index</h1>
+
+    {{ form_start(form) }}
+    {{ form_end(form) }}
+
+<table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>
+                    <a href="{{ path('app_student_index', {'sort': 'firstName', 'direction': (sortProperty == 'firstName' and orderDirection == 'ASC') ? 'DESC' : 'ASC'}) }}">
+                        First Name
+                        {% if sortProperty == 'firstName' %}
+                            {% if orderDirection == 'ASC' %} &#9650;{% else %} &#9660;{% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="{{ path('app_student_index', {'sort': 'lastName', 'direction': (sortProperty == 'lastName' and orderDirection == 'ASC') ? 'DESC' : 'ASC'}) }}">
+                        Last Name
+                        {% if sortProperty == 'lastName' %}
+                            {% if orderDirection == 'ASC' %} &#9650;{% else %} &#9660;{% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+                <th>Date Of Birth</th>
+                <th>Courses</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for student in students %}
+            <tr>
+                <td>{{ student.id }}</td>
+                <td>{{ student.firstName }}</td>
+                <td>{{ student.lastName }}</td>
+                <td>{{ student.dateOfBirth ? student.dateOfBirth|date('Y-m-d') : '' }}</td>
+                <td>
+                    {% if student.courses|length > 0 %}
+                        {% for course in student.courses %}
+                            {{ course.name }}
+                        {% endfor %}
+                    {% else %}
+                        No courses
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ path('app_student_show', {'id': student.id}) }}">Show</a>
+                    <a href="{{ path('app_student_edit', {'id': student.id}) }}">Edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">No records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination">
+    {% if currentPage > 1 %}
+        <a href="{{ path('app_student_index', {'page': 1, 'sort': sortProperty, 'direction': orderDirection}) }}">First</a>
+        <a href="{{ path('app_student_index', {'page': currentPage - 1, 'sort': sortProperty, 'direction': orderDirection}) }}">Previous</a>
+    {% endif %}
+
+    Page {{ currentPage }} of {{ totalPages }}
+
+    {% if currentPage < totalPages %}
+        <a href="{{ path('app_student_index', {'page': currentPage + 1, 'sort': sortProperty, 'direction': orderDirection}) }}">Next</a>
+        <a href="{{ path('app_student_index', {'page': totalPages, 'sort': sortProperty, 'direction': orderDirection}) }}">Last</a>
+    {% endif %}
+    </div>
+
+
+    {# <div class="pagination">
+    {{ knp_pagination_render(pagination) }}
+    </div> #}
+
+    <a href="{{ path('app_student_new') }}">Create</a>
+{% endblock %}
+
