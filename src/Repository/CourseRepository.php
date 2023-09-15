@@ -21,6 +21,28 @@ class CourseRepository extends ServiceEntityRepository
         parent::__construct($registry, Course::class);
     }
 
+    public function findByField($fieldName, $fieldValue)
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        if (empty($fieldValue)) {
+            // If $fieldValue is empty, return all records without filtering
+            $qb
+                ->orderBy('c.id', 'ASC');
+        }else{
+            if ($fieldName === 'name') {
+                $qb->Where($qb->expr()->like('c.name', ':fieldValue'));
+            
+            }
+
+            $qb->setParameter('fieldValue', $fieldValue . '%');
+    
+            // Order the results by student ID
+            $qb->orderBy('c.id', 'ASC');
+        }
+        return $qb;
+    }
+
 //    /**
 //     * @return Course[] Returns an array of Course objects
 //     */

@@ -37,19 +37,20 @@ class StudentController extends AbstractController
                 ->orderBy('s.' . $sortProperty, $orderDirection);
         }
 
+        $students = $queryBuilder->getQuery()->getResult();
+        $totalItems = count($queryBuilder->getQuery()->getResult());
         $page = $request->query->getInt('page', 1);
 
         $perPage = 5;
 
         $offset = ($page - 1) * $perPage;
 
-        $totalItems = count($queryBuilder->getQuery()->getResult());
 
         $totalPages = ceil($totalItems / $perPage);
         //dd($totalPages);
-        $queryBuilder->setFirstResult($offset)->setMaxResults($perPage);
+       
+        $students = array_slice($students, $offset, $perPage);
 
-        $students = $queryBuilder->getQuery()->getResult();
 
 
         return $this->render('student/index.html.twig', [

@@ -4,21 +4,62 @@ namespace App\Controller;
 
 use App\Entity\Grades;
 use App\Form\GradesType;
+use App\Form\GradesSearchType;
 use App\Repository\GradesRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/grades')]
 class GradesController extends AbstractController
 {
-    #[Route('/', name: 'app_grades_index', methods: ['GET'])]
-    public function index(GradesRepository $gradesRepository): Response
+    #[Route('/', name: 'app_grades_index', methods: ['GET', 'POST'])]
+    public function index(Request $request,GradesRepository $gradesRepository): Response
     {
+        $form = $this->createForm(GradesSearchType::class);
+        $form->handleRequest($request);
+
+        $sortProperty = $request->query->get('sort', 'student.firstName'); // Default sorting column
+        $orderDirection = $request->query->get('direction', 'ASC'); // Default sorting direction
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $field = $form->get('field')->getData();
+            $query = $form->get('value')->getData();
+            #dd($field);
+            $queryBuilder = $gradesRepository->findByField($field, $query);
+
+        } else {
+            // Create the query builder with sorting parameters
+            $queryBuilder = $gradesRepository->createQueryBuilder('g')
+                ->leftJoin('g.student', 'student')
+                ->leftJoin('g.course', 'course')
+                ->orderBy($sortProperty, $orderDirection);
+        }
+
+        $page = $request->query->getInt('page', 1);
+
+        $perPage = 5;
+
+        $offset = ($page - 1) * $perPage;
+
+        $totalItems = count($queryBuilder->getQuery()->getResult());
+
+        $totalPages = ceil($totalItems / $perPage);
+        //dd($totalPages);
+        $queryBuilder->setFirstResult($offset)->setMaxResults($perPage);
+
+        $grades = $queryBuilder->getQuery()->getResult();
+
+
         return $this->render('grades/index.html.twig', [
-            'grades' => $gradesRepository->findAll(),
+            'grades' => $grades,
+            'form' => $form->createView(),
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'sortProperty' => $sortProperty,
+            'orderDirection' => $orderDirection,
         ]);
     }
 

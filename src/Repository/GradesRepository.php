@@ -21,6 +21,32 @@ class GradesRepository extends ServiceEntityRepository
         parent::__construct($registry, Grades::class);
     }
 
+    public function findByField($fieldName, $fieldValue)
+    {
+        $qb = $this->createQueryBuilder('g');
+
+        if (empty($fieldValue)) {
+            // If $fieldValue is empty, return all records without filtering
+            $qb
+                ->orderBy('g.id', 'ASC');
+        }else{
+            $qb->leftJoin('g.course' , 'c');
+            $qb->leftJoin('g.student' , 's');
+            if ($fieldName === 'student.firstName') {
+                $qb->Where($qb->expr()->like('s.firstName', ':fieldValue'));
+            } elseif ($fieldName === 'student.lastName') {
+                $qb->Where($qb->expr()->like('s.lastName', ':fieldValue'));
+            } elseif ($fieldName === 'course') {
+                $qb->Where($qb->expr()->like('c.name', ':fieldValue'));
+            }
+
+            $qb->setParameter('fieldValue', $fieldValue . '%');
+
+            $qb->orderBy('g.id', 'ASC');
+        }
+        return $qb;
+    }
+
 //    /**
 //     * @return Grades[] Returns an array of Grades objects
 //     */

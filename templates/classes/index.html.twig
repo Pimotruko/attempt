@@ -5,11 +5,22 @@
 {% block body %}
     <h1>Classes index</h1>
 
+    {{ form_start(form) }}
+    {{ form_end(form) }}
+
+
     <table class="table">
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Name</th>
+                <th>
+                    <a href="{{ path('app_classes_index', {'sort': 'name', 'direction': (sortProperty == 'name' and orderDirection == 'ASC') ? 'DESC' : 'ASC'}) }}">
+                        Name
+                        {% if sortProperty == 'name' %}
+                            {% if orderDirection == 'ASC' %} &#9650;{% else %} &#9660;{% endif %}
+                        {% endif %}
+                    </a>
+                </th>
                 <th>Section</th>
                 <th>actions</th>
             </tr>

@@ -4,21 +4,59 @@ namespace App\Controller;
 
 use App\Entity\Classes;
 use App\Form\ClassesType;
+use App\Form\ClassesSearchType;
 use App\Repository\ClassesRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/classes')]
 class ClassesController extends AbstractController
 {
-    #[Route('/', name: 'app_classes_index', methods: ['GET'])]
-    public function index(ClassesRepository $classesRepository): Response
+    #[Route('/', name: 'app_classes_index', methods: ['GET', 'POST'])]
+    public function index(Request $request,ClassesRepository $classesRepository): Response
     {
+        $form = $this->createForm(ClassesSearchType::class);
+        $form->handleRequest($request);
+
+        $sortProperty = $request->query->get('sort', 'name'); // Default sorting column
+        $orderDirection = $request->query->get('direction', 'ASC'); // Default sorting direction
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $field = $form->get('field')->getData();
+            $query = $form->get('value')->getData();
+            $queryBuilder = $classesRepository->findByField($field, $query);
+
+        } else {
+            // Create the query builder with sorting parameters
+            $queryBuilder = $classesRepository->createQueryBuilder('s')
+                ->orderBy('s.' . $sortProperty, $orderDirection);
+        }
+
+        $page = $request->query->getInt('page', 1);
+
+        $perPage = 10;
+
+        $offset = ($page - 1) * $perPage;
+
+        $totalItems = count($queryBuilder->getQuery()->getResult());
+
+        $totalPages = ceil($totalItems / $perPage);
+        //dd($totalPages);
+        $queryBuilder->setFirstResult($offset)->setMaxResults($perPage);
+
+        $classes = $queryBuilder->getQuery()->getResult();
+        
+
         return $this->render('classes/index.html.twig', [
-            'classes' => $classesRepository->findAll(),
+            'classes' => $classes,
+            'form' => $form->createView(),
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'sortProperty' => $sortProperty,
+            'orderDirection' => $orderDirection,
         ]);
     }
 

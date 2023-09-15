@@ -4,6 +4,9 @@ framework:
         default_path: '%kernel.project_dir%/translations'
         fallbacks:
             - en
+
+parameters:
+    locale: 'en'
 #        providers:
 #            crowdin:
 #                dsn: '%env(CROWDIN_DSN)%'

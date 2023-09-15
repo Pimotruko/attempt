@@ -5,18 +5,48 @@
 {% block body %}
     <h1>Grades index</h1>
 
+    {{ form_start(form) }}
+    {{ form_end(form) }}
+
     <table class="table">
         <thead>
             <tr>
                 <th>Id</th>
+                <th>
+                    <a href="{{ path('app_grades_index', {'sort': 'student.firstName', 'direction': (sortProperty == 'student.firstName' and orderDirection == 'ASC') ? 'DESC' : 'ASC'}) }}">
+                        First Name
+                        {% if sortProperty == 'student.firstName' %}
+                            {% if orderDirection == 'ASC' %} &#9650;{% else %} &#9660;{% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="{{ path('app_grades_index', {'sort': 'student.lastName', 'direction': (sortProperty == 'student.lastName' and orderDirection == 'ASC') ? 'DESC' : 'ASC'}) }}">
+                        Last Name
+                        {% if sortProperty == 'student.lastName' %}
+                            {% if orderDirection == 'ASC' %} &#9650;{% else %} &#9660;{% endif %}
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="{{ path('app_grades_index', {'sort': 'course.name', 'direction': (sortProperty == 'course.name' and orderDirection == 'ASC') ? 'DESC' : 'ASC'}) }}">
+                        Course
+                        {% if sortProperty == 'course.name' %}
+                            {% if orderDirection == 'ASC' %} &#9650;{% else %} &#9660;{% endif %}
+                        {% endif %}
+                    </a>
+                </th>
                 <th>Grade</th>
-                <th>actions</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
         {% for grade in grades %}
             <tr>
                 <td>{{ grade.id }}</td>
+                <td>{{ grade.student.firstName }}</td>
+                <td>{{ grade.student.lastName }}</td>
+                <td>{{ grade.course }}</td>
                 <td>{{ grade.grade }}</td>
                 <td>
                     <a href="{{ path('app_grades_show', {'id': grade.id}) }}">show</a>
