@@ -45,6 +45,11 @@ class Grades
         return $this;
     }
 
+    public function __toString(): string
+    {
+        return strval($this->getGrade());
+    }
+
     public function getStudent(): ?Student
     {
         return $this->student;
