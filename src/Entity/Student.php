@@ -26,6 +26,7 @@ class Student
     private ?\DateTimeInterface $dateOfBirth = null;
 
     #[ORM\ManyToMany(targetEntity: Course::class, mappedBy: 'students')]
+    #[ORM\JoinTable(name: 'course_student')]
     private Collection $courses;
 
     #[ORM\ManyToMany(targetEntity: Classes::class, mappedBy: 'student')]

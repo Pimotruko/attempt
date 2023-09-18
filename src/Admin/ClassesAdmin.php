@@ -17,7 +17,6 @@ final class ClassesAdmin extends AbstractAdmin
             ->add('name')
             ->add('section')
             ->add('course');
-
     }
 
     protected function configureDatagridFilters(DatagridMapper $datagrid): void
