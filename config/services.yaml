@@ -23,7 +23,19 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    admin.category:
+    admin.student:
         class: App\Admin\StudentAdmin
         tags:
             - { name: sonata.admin, model_class: App\Entity\Student, manager_type: orm, label: Student }
+    admin.course:
+        class: App\Admin\CourseAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\Course, manager_type: orm, label: Course }
+    admin.classes:
+        class: App\Admin\ClassesAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\Classes, manager_type: orm, label: Classes }
+    admin.grades:
+        class: App\Admin\GradesAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\Grades, manager_type: orm, label: Grades }
