@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\StudentRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\StudentRepository;
+use App\Entity\Traits\TimestampableTrait;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: StudentRepository::class)]
 class Student
@@ -26,7 +27,6 @@ class Student
     private ?\DateTimeInterface $dateOfBirth = null;
 
     #[ORM\ManyToMany(targetEntity: Course::class, mappedBy: 'students')]
-    #[ORM\JoinTable(name: 'course_student')]
     private Collection $courses;
 
     #[ORM\ManyToMany(targetEntity: Classes::class, mappedBy: 'student')]
@@ -34,6 +34,18 @@ class Student
 
     #[ORM\OneToMany(mappedBy: 'student', targetEntity: Grades::class)]
     private Collection $grades;
+
+    use TimestampableTrait;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    public ?\DateTimeInterface $createdAt = null;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    public ?\DateTimeInterface $modifiedAt = null;
 
     public function __construct()
     {

@@ -22,7 +22,7 @@ class Course
     private ?string $description = null;
 
     #[ORM\ManyToMany(targetEntity: Student::class, inversedBy: 'courses')]
-    #[ORM\JoinTable(name: 'course_student')]
+    //#[ORM\JoinTable(name: 'course_student')]
     private Collection $students;
 
     #[ORM\ManyToMany(targetEntity: Classes::class, mappedBy: 'course')]
